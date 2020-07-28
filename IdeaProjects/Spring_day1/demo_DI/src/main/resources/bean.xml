@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Spring中的依赖注入
+        IOC的作用：降低程序间的耦合（依赖关系）。
+
+        依赖关系的管理：
+            以后都交由Spring来维护。如果当前类要用到其他类的对象，由Spring来提供，我们只要在配置文件中说明即可。
+
+        依赖注入(Dependency Injection)：指依赖关系的维护。
+            能注入的数据：
+                1.基本类型和String
+                2.其他bean类型（在配置文件中或者在注解中配置过的bean）
+                3.复杂类型/集合类型
+            注入的方式：
+                1.使用构造函数提供
+              * 2.使用set方法提供        （常用）
+                3.使用注解提供（下一个Project会介绍）
+    -->
+
+
+    <!-- 构造函数注入：
+        使用的标签：constructor-arg
+        标签的位置：bean标签的内部
+
+        标签中的属性:
+            type：用于指定待注入数据的数据类型，该数据类型也是构造函数中某个或某些参数的类型。
+            index：用来为构造函数中的指定索引位置的参数赋值。索引位置从0开始。
+          * name：用来为构造函数中指定名称的参数赋值。         （常用）
+            =============== 以上3个属性用来指定给构造函数中哪个参数赋值 ===============
+            value：用于提供基本类型和String类型的数据。
+            ref：用于指定其他bean类型的数据。其他bean类型数据是指，在Spring的IOC核心容器中出现过的bean对象。
+
+        优势：
+            在获取bean对象时，注入数据是必须的操作，否则对象无法创建成功。
+        弊端：
+            改变了bean对象的实例化方式，使我们在创建对象时，即使用不到这些数据，也必须提供。
+    -->
+
+    <bean id="accountService" class="com.chm.service.impl.AccountServiceImpl">
+        <constructor-arg name="name" value="胡汉三"></constructor-arg>
+        <constructor-arg name="age" value="18"></constructor-arg>
+        <constructor-arg name="birthday" ref="now"></constructor-arg>
+    </bean>
+
+    <!-- 配置一个日期对象 -->
+    <bean id="now" class="java.util.Date"></bean>
+
+
+
+
+    <!-- set方法注入：
+        使用的标签：property
+        标签的位置：bean标签的内部
+
+        标签中的属性:
+            name：用于指定注入时调用的set方法名称（注意：方法名称是指set之后紧跟着的名称）。
+            value：用于提供基本类型和String类型的数据。
+            ref：用于指定其他bean类型的数据。其他bean类型数据是指，在Spring的IoC核心容器中出现过的bean对象。
+
+        优势：
+            创建对象时没有明确的限制，可以直接使用默认构造函数。
+        弊端：
+            若有某个成员必须有值，则获取对象时有可能set方法没有执行。
+    -->
+    <bean id="accountService_2" class="com.chm.service.impl.AccountServiceImpl_2">
+        <property name="name" value="test_name"></property>
+        <property name="age" value="18"></property>
+        <property name="birthday" ref="now"></property>
+    </bean>
+
+
+
+
+    <!-- 复杂类型/集合类型的set方法注入
+        1.用于给List结构集合注入的标签：
+            array
+            list
+            set
+        2.用于给Map结构集合注入的标签：
+            map
+            props
+
+        总结：结构相同，标签可以互换。因此，只须记住List和Map两种结构即可。
+    -->
+    <bean id="accountService_3" class="com.chm.service.impl.AccountServiceImpl_3">
+        <property name="myStrs">
+            <array>
+                <value>Strs1</value>
+                <value>Strs2</value>
+                <value>Strs3</value>
+            </array>
+        </property>
+
+        <property name="myList">
+            <list>
+                <value>List1</value>
+                <value>List1</value>
+                <value>List3</value>
+            </list>
+        </property>
+
+        <property name="mySet">
+            <set>
+                <value>Set1</value>
+                <value>Set1</value>
+                <value>Set2</value>
+            </set>
+        </property>
+
+        <property name="myMap">
+            <props>
+                <prop key="Props1">p1</prop>
+                <prop key="Props2">p2</prop>
+                <prop key="Props3">p3</prop>
+            </props>
+        </property>
+
+        <property name="myProps">
+            <map>
+                <entry key="Map1" value="m1"></entry>
+                <entry key="Map2" value="m2"></entry>
+                <entry key="Map3" value="m3"></entry>
+            </map>
+        </property>
+    </bean>
+
+
+</beans>

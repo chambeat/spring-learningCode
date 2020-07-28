@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 将service对象存入容器 -->
+    <bean id="accountService" class="com.chm.service.impl.AccountServiceImpl">
+        <!-- 注入dao对象 -->
+        <property name="accountDao" ref="accountDao"></property>
+    </bean>
+
+    <!-- 将dao对象存入容器 -->
+    <bean id="accountDao" class="com.chm.dao.impl.AccountDaoImpl">
+        <!-- 注入QueryRunner对象 -->
+        <property name="runner" ref="runner"></property>
+        <!-- 注入ConnectionUtils对象 -->
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <!-- 将QueryRunner对象存入容器 -->
+    <bean id="runner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype"></bean>
+
+    <!-- 将DataSource(数据源)对象存入容器 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!-- 配置(注入)数据库的4个基本信息 -->
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost/spring?serverTimezone=GMT"></property>
+        <property name="user" value="root"></property>
+        <property name="password" value="chm699276"></property>
+    </bean>
+
+    <!-- 将ConnectionUtils对象存入容器 -->
+    <bean id="connectionUtils" class="com.chm.utils.ConnectionUtils">
+        <!-- 注入数据源对象 -->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!-- 将TransactionManager对象存入容器 -->
+    <bean id="transactionManager" class="com.chm.utils.TransactionManager">
+        <!-- 注入ConnectionUtils对象 -->
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+
+    <!-- 配置BeanFactory对象 -->
+    <bean id="beanFactory" class="com.chm.factory.BeanFactory">
+        <!-- 注入service对象 -->
+        <property name="accountService" ref="accountService"></property>
+        <!-- 注入TransactionManager对象 -->
+        <property name="txManager" ref="transactionManager"></property>
+    </bean>
+
+    <!-- 配置service的代理对象 -->
+    <bean id="proxyService" factory-bean="beanFactory" factory-method="getAccountService"></bean>
+</beans>

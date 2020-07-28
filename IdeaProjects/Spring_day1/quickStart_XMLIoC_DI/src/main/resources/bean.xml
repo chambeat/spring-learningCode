@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--<bean id="accountService" class="com.chm.service.impl.AccountServiceImpl">
+        <constructor-arg name="username" value="Justin"></constructor-arg>
+        <constructor-arg name="age" value="18"></constructor-arg>
+        <constructor-arg name="birthday" ref="now"></constructor-arg>
+    </bean>-->
+
+    <!--<bean id="accountService" class="com.chm.service.impl.AccountServiceImpl">
+        <property name="name" value="王力宏"></property>
+        <property name="age" value="43"></property>
+        <property name="birthday" ref="now"></property>
+    </bean>-->
+
+    <bean id="accountService" class="com.chm.service.impl.AccountServiceImpl">
+        <property name="myStrs">
+            <array>
+                <value>Str1</value>
+                <value>Str2</value>
+            </array>
+        </property>
+
+        <property name="myList">
+            <list>
+                <value>listItem1</value>
+                <value>listItem2</value>
+            </list>
+        </property>
+
+        <property name="mySet">
+            <set>
+                <value>set1</value>
+                <value>set2</value>
+            </set>
+        </property>
+
+        <property name="myMap">
+            <map>
+                <entry key="major" value="Software Engineering"></entry>
+                <entry key="job" value="Software Engineer"></entry>
+            </map>
+        </property>
+
+        <property name="myProps">
+            <props>
+                <prop key="major">CS</prop>
+                <prop key="job">English Teacher</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="now" class="java.util.Date"></bean>
+</beans>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 配置dao对象 -->
+    <bean id="accountDao" class="com.chm.dao.impl.AccountDaoImpl">
+        <property name="dataSource" ref="ds"></property>
+    </bean>
+
+    <!-- 配置service对象 -->
+    <bean id="accountService" class="com.chm.service.impl.AccountServiceImpl">
+        <property name="accountDao" ref="accountDao"></property>
+    </bean>
+
+    <!-- 配置数据源对象 -->
+    <bean id="ds" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <!-- 注入连接数据库的基本信息 -->
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/spring?serverTimezone=GMT"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="chm699276"></property>
+    </bean>
+
+    <!-- Spring中基于XML的声明式事务控制-配置步骤
+        1.配置事务管理器
+        2.配置事务的通知
+            (1) 导入所需的名称空间和约束：tx、aop
+            (2) 配置事务的通知：
+                使用tx:advice标签来配置事务的通知。
+                    属性：
+                        id：事务通知的名称，即事务通知的唯一标志。
+                        transaction-manager：给事务通知提供一个事务管理器的引用。
+            (3) 配置事务的属性：
+                通过在tx:advice标签的内部使用tx:attributes标签，实现对属性的配置。
+                    属性：
+                        name：
+                            用于指定切入点方法名。
+                        propagation：
+                            用于指定事务的传播行为。
+                            默认值是REQUIRED，表示一定会有事务，该值是增删改的选择。查询方法可以选择用SUPPORTS。
+                        read-only：
+                            用于指定事务是否只读。
+                            默认值是false，表示读写。只有查询方法才能设置为true。
+                        isolation：
+                            用于指定事务的隔离级别。
+                            默认值是DEFAULT，表示使用数据库的默认隔离级别。
+                        timeout：
+                            用于指定事务的超时时间。
+                            默认值是-1，表示永不超时。如果指定了数值，以秒为单位。
+                        rollback-for：
+                            用于指定一个异常。当产生该异常时，事务回滚；当产生其他异常时，事务不回滚。
+                            无默认值。
+                           * 注意：不指定时，表示任何异常都回滚。
+                        no-rollback-for：
+                            用于指定一个异常。当产生该异常时，事务不回滚；当产生其他异常时，事务回滚。
+                            无默认值。
+                           * 注意：不指定时，表示任何异常都回滚。
+        3.配置AOP中通用的切入点表达式
+        4.建立事务通知和切入点的对应关系
+            通过在aop:config标签内部使用aop:advisor标签来实现。
+    -->
+
+    <!-- 1.配置事务管理器 -->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="ds"></property>
+    </bean>
+
+    <!-- 2.配置事务的通知 -->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <!-- 配置事务的属性 -->
+        <tx:attributes>
+            <!--针对所有方法-->
+            <tx:method name="*" propagation="REQUIRED" read-only="false"></tx:method>
+            <!--针对方法名中含有"find"的方法-->
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"></tx:method>
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置AOP -->
+    <aop:config>
+        <!-- 3.配置通用的切入点表达式 -->
+        <aop:pointcut id="pc1" expression="execution(* com.chm.service.impl.AccountServiceImpl.*(..))"></aop:pointcut>
+        <!-- 4.建立事务通知和切入点的对应关系 -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pc1"></aop:advisor>
+    </aop:config>
+
+</beans>

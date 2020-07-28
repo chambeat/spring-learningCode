@@ -1,0 +1,32 @@
+package com.chm.dao.impl;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.sql.DataSource;
+
+/**
+ * 此类用于抽取dao中的重复代码(此类在org.springframework.jdbc.core.support.JdbcDaoSupport中也有实现)
+ */
+/*
+public class JdbcDaoSupport {
+    private JdbcTemplate jdbcTemplate;
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        if (jdbcTemplate == null) {
+            jdbcTemplate = createJdbcTemplate(dataSource);
+        }
+    }
+
+    public JdbcTemplate createJdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+}
+*/

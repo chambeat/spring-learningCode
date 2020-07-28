@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 配置Spring的IoC，将service对象配置进来 -->
+    <bean id="accountService" class="com.chm.service.impl.AccountServiceImpl"></bean>
+
+    <!-- Spring中基于XML的AOP配置步骤：
+        1.把通知类bean也交给Spring来管理
+        2.使用aop:config标签表明开始AOP的配置
+        3.使用aop:aspect标签表明配置切面
+            (1)id属性：用于给切面提供一个唯一标志。
+            (2)ref属性：用于指定通知类bean的id。
+        4.在aop:aspect标签的内部使用对应标签来配置通知的类型
+            aop:before标签：前置通知
+                (1)method属性：用于指定Logger类中哪个方法是前置通知。
+                (2)pointcut属性：用于指定切入点表达式。该表达式的含义是：指定对业务层的哪些方法增强。
+                    切入点表达式的写法：
+                        关键字：execution(表达式)
+                        表达式：
+                            访问修饰符  返回值  包名.包名.包名...类名.方法名(参数列表)
+                        标准的表达式写法：
+                            public void com.chm.service.impl.AccountServiceImpl.saveAccount()
+                        访问修饰符可以省略
+                            void com.chm.service.impl.AccountServiceImpl.saveAccount()
+                        返回值可以使用通配符
+                            * com.chm.service.impl.AccountServiceImpl.saveAccount()
+                        包名可以使用通配符，表示任意包。但是有几级包，就要写几个*.
+                            * *.*.*.*.AccountServiceImpl.saveAccount()
+                        包名可以使用..表示当前包及其子包
+                            * *..AccountServiceImpl.saveAccount()
+                        类名和方法名都可以使用*来实现通配
+                            * *..*.*()
+                        参数列表：
+                            可以直接写数据类型：
+                                基本类型直接写名称           int
+                                引用类型写包名.类名的方式     java.lang.String
+                            可以使用通配符表示任意类型，但必须有参数。
+                            可以使用..表示有无参数均可。若有参数，则参数可以是任意类型。
+                        全通配写法：
+                            * *..*.*(..)
+
+                        在实际开发中，切入点表达式的通常写法：
+                            切到业务层实现类下的所有方法
+                                * com.chm.service.impl.*.*(..)
+
+                (3)pointcut-ref属性：用于指定
+            aop:after-returning标签：后置通知
+            aop:after-throwing标签：异常通知
+            aop:after标签：最终通知
+            aop:around标签：环绕通知
+    -->
+
+    <!-- 配置Logger类(通知类bean) -->
+    <bean id="logger" class="com.chm.utils.Logger"></bean>
+
+    <!-- 配置Spring的AOP -->
+    <aop:config>
+        <!-- 配置通用的切入点表达式 -->
+        <aop:pointcut id="pc1" expression="execution(* com.chm.service.impl.AccountServiceImpl.*(..))"></aop:pointcut>
+        <!-- 配置切面 -->
+        <aop:aspect id="logAdvice" ref="logger">
+            <!-- 配置通知的类型，并且建立通知方法和切入点方法(被增强的业务层方法)的关联 -->
+            <!--前置通知：在切入点方法执行之前执行-->
+            <!--<aop:before method="printLogBefore" pointcut-ref="pc1"></aop:before>-->
+            <!--后置通知：在切入点方法正常执行之后执行。它和异常通知二者之间只能执行其中一个-->
+            <!--<aop:after-returning method="printLogAfterReturning" pointcut-ref="pc1"></aop:after-returning>-->
+            <!--异常通知：在切入点方法执行产生异常之后执行。它和后置通知二者之间只能执行其中一个-->
+            <!--<aop:after-throwing method="printLogAfterThrowing" pointcut-ref="pc1"></aop:after-throwing>-->
+            <!--最终通知：无论切入点方法是否正常执行，它都会在其后面执行-->
+            <!--<aop:after method="printLogAfter" pointcut-ref="pc1"></aop:after>-->
+
+            <!--环绕通知：(详细注释请见Logger类中)-->
+            <aop:around method="printLogAround" pointcut-ref="pc1"></aop:around>
+        </aop:aspect>
+    </aop:config>
+</beans>
